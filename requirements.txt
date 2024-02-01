@@ -24,3 +24,5 @@ uvicorn
 accelerate==0.21.0
 chardet
 trl
+google-cloud-secret-manager
+cryptography
