@@ -556,7 +556,7 @@ for i in range(total_iterations):
 ################################################################################
 
 # Fine-tuned model name
-new_model = "tiny-llama-orca-amp-gclip-dp-pa-sgd-dz-v1.2.1000"
+new_model = "ncmltest"
 
 # Save the model using the updated save_model method in PrivacyAwareTrainer
 trainer.model.save_pretrained(new_model)
