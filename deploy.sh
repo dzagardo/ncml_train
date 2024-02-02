@@ -35,7 +35,7 @@ pip install -r requirements.txt
 # Retrieve and decrypt the Hugging Face Access Token
 # Using python3 explicitly as we are in the conda environment
 echo "Retrieving and decrypting the Hugging Face Access Token..."
-export HF_TOKEN=$(python -c 'from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY"), "ENCRYPTED_TOKEN"))')
+export HF_TOKEN=$(python3 -c 'from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY"), "ENCRYPTED_TOKEN"))')
 
 # Login to the HuggingFace CLI
 echo "Logging in to the HuggingFace CLI..."
@@ -43,6 +43,6 @@ echo $HF_TOKEN | huggingface-cli login
 
 # Run the training script with parameters
 echo "Running the training script..."
-python train.py
+python3 train.py
 
 echo "Deploy script finished."
