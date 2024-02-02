@@ -18,7 +18,7 @@ export PATH="/opt/conda/bin:$PATH"
 
 # Create a new Conda environment with Python 3.9
 echo "Creating a new Conda environment with Python 3.9..."
-conda create -n myenv python=3.9 -y
+sudo conda create -n myenv2 python=3.9 -y
 
 # Activate the environment
 echo "Activating the Conda environment..."
@@ -42,7 +42,7 @@ sudo apt-get update
 
 # Install the NVIDIA driver using the package manager
 echo "Installing the latest NVIDIA driver..."
-sudo apt-get install -y nvidia-driver-510
+sudo apt-get install -y build-essential
 
 # Install CUDA Toolkit
 echo "Installing CUDA Toolkit..."
