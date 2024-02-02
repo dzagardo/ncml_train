@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Redirect stdout and stderr to a log file
 LOG_FILE="/var/log/deploy-script.log"
 exec > $LOG_FILE 2>&1
@@ -5,12 +7,6 @@ exec > $LOG_FILE 2>&1
 # Set environment variables for non-interactive mode
 export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
-
-# Pre-seed answers to known prompts
-# For example, if tzdata is being installed and prompts for geographic area:
-export TZ="Etc/UTC"
-ln -fs /usr/share/zoneinfo/$TZ /etc/localtime
-dpkg-reconfigure --frontend noninteractive tzdata
 
 echo "Starting the deploy script..."
 
@@ -38,13 +34,17 @@ sudo apt-get update && sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg
 
 # Install NVIDIA GPU driver
 echo "Installing NVIDIA GPU driver..."
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository contrib
-sudo add-apt-repository non-free
-sudo apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+-o Dpkg::Options::="--force-confdef" \
+-o Dpkg::Options::="--force-confold" software-properties-common
+
+# Add the contrib and non-free repositories (if needed for driver installation)
+sudo DEBIAN_FRONTEND=noninteractive add-apt-repository contrib -y
+sudo DEBIAN_FRONTEND=noninteractive add-apt-repository non-free -y
+sudo DEBIAN_FRONTEND=noninteractive apt-get update
 
 # Automatically install the recommended driver
-sudo ubuntu-drivers autoinstall || echo "Failed to install drivers automatically; check manually."
+sudo DEBIAN_FRONTEND=noninteractive ubuntu-drivers autoinstall
 
 # Install CUDA Toolkit (if necessary)
 echo "Installing CUDA Toolkit..."
