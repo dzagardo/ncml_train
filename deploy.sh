@@ -6,29 +6,43 @@ exec > $LOG_FILE 2>&1
 
 echo "Starting the deploy script..."
 
-# Ensure Python3 and pip3 are installed (Debian/Ubuntu specific)
-# This step would ideally ensure Python 3.9 is installed, but requires custom handling as mentioned
-apt-get update && apt-get install -y python3 python3-pip
+# Download and install Miniconda
+echo "Installing Miniconda..."
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
+bash /tmp/miniconda.sh -b -p /opt/conda
+export PATH="/opt/conda/bin:$PATH"
+
+# Create a new Conda environment with Python 3.9
+echo "Creating a new Conda environment with Python 3.9..."
+conda create -n myenv python=3.9 -y
+
+# Activate the environment
+echo "Activating the Conda environment..."
+source /opt/conda/bin/activate myenv
 
 # Install Hugging Face CLI
-pip3 install huggingface-hub
+echo "Installing Hugging Face CLI..."
+pip install huggingface-hub
 
 # Install necessary dependencies for secret retrieval and decryption
-pip3 install google-cloud-secret-manager cryptography
+echo "Installing dependencies..."
+pip install google-cloud-secret-manager cryptography
 
 # Install requirements from requirements.txt
-# Assumes requirements.txt is compatible with the installed Python version
-pip3 install -r requirements.txt
+echo "Installing requirements from requirements.txt..."
+pip install -r requirements.txt
 
 # Retrieve and decrypt the Hugging Face Access Token
-# Make sure to use python3 explicitly
-export HF_TOKEN=$(python3 -c 'from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY"), "ENCRYPTED_TOKEN"))')
+# Using python3 explicitly as we are in the conda environment
+echo "Retrieving and decrypting the Hugging Face Access Token..."
+export HF_TOKEN=$(python -c 'from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY"), "ENCRYPTED_TOKEN"))')
 
 # Login to the HuggingFace CLI
+echo "Logging in to the HuggingFace CLI..."
 echo $HF_TOKEN | huggingface-cli login
 
 # Run the training script with parameters
-# Again, ensure python3 is used
-python3 train.py
+echo "Running the training script..."
+python train.py
 
 echo "Deploy script finished."
