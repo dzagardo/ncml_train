@@ -10,7 +10,7 @@ export APT_LISTCHANGES_FRONTEND=none
 
 echo "Starting the deploy script..."
 
-# Download and install Miniconda
+# Download and install Miniconda in silent mode
 echo "Installing Miniconda..."
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
 bash /tmp/miniconda.sh -b -p /opt/conda
@@ -28,29 +28,30 @@ source /opt/conda/bin/activate myenv
 echo "Installing Hugging Face CLI..."
 pip install huggingface-hub
 
-# Ensure system is up to date
-echo "Updating system packages..."
-sudo apt-get update && sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade -y
+# Ensure dpkg is in a good state
+echo "Ensuring dpkg is configured properly..."
+sudo dpkg --configure -a
 
-# Install NVIDIA GPU driver
-echo "Installing NVIDIA GPU driver..."
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
--o Dpkg::Options::="--force-confdef" \
--o Dpkg::Options::="--force-confold" software-properties-common
+# Add NVIDIA repository and key
+echo "Adding NVIDIA repository..."
+sudo wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb
+sudo dpkg -i cuda-keyring_1.0-1_all.deb
 
-# Add the contrib and non-free repositories (if needed for driver installation)
-sudo DEBIAN_FRONTEND=noninteractive add-apt-repository contrib -y
-sudo DEBIAN_FRONTEND=noninteractive add-apt-repository non-free -y
-sudo DEBIAN_FRONTEND=noninteractive apt-get update
+# Update the package lists
+sudo apt-get update
 
-# Automatically install the recommended driver
-sudo DEBIAN_FRONTEND=noninteractive ubuntu-drivers autoinstall
+# Install the NVIDIA driver using the package manager
+echo "Installing the latest NVIDIA driver..."
+sudo apt-get install -y nvidia-driver-510
 
-# Install CUDA Toolkit (if necessary)
+# Install CUDA Toolkit
 echo "Installing CUDA Toolkit..."
-# Specify the version you need
-CUDA_VERSION="cuda-11-4"
+CUDA_VERSION="cuda-toolkit-11-4" # Adjust the package name as necessary
 sudo apt-get install -y $CUDA_VERSION
+
+# Additional step: Install cuDNN (if necessary for deep learning frameworks)
+echo "Installing cuDNN..."
+sudo apt-get install -y libcudnn8
 
 # Verify CUDA installation
 echo "Verifying CUDA installation..."
