@@ -10,12 +10,13 @@ export APT_LISTCHANGES_FRONTEND=none
 
 echo "Starting the deploy script..."
 
-# Download and install Miniconda without prompts
+# Download and install Miniconda
 echo "Installing Miniconda..."
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
-bash /tmp/miniconda.sh -b -p /opt/conda -u
+bash /tmp/miniconda.sh -b -p /opt/conda
+export PATH="/opt/conda/bin:$PATH"
 
-# Create a new Conda environment with Python 3.9 without prompts
+# Create a new Conda environment with Python 3.9
 echo "Creating a new Conda environment with Python 3.9..."
 conda create -n myenv python=3.9 -y
 
@@ -27,20 +28,21 @@ source /opt/conda/bin/activate myenv
 echo "Installing Hugging Face CLI..."
 pip install huggingface-hub
 
-# Ensure system is up to date without prompts
+# Ensure system is up to date
 echo "Updating system packages..."
-sudo apt-get -y update
-sudo apt-get -y upgrade
+sudo apt-get update && sudo apt-get upgrade -y
 
-# Install NVIDIA GPU driver without prompts
+# Install NVIDIA GPU driver
 echo "Installing NVIDIA GPU driver..."
 sudo apt-get install -y software-properties-common
 sudo add-apt-repository contrib
 sudo add-apt-repository non-free
-sudo apt-get -y update
+sudo apt-get update
+
+# Automatically install the recommended driver
 sudo ubuntu-drivers autoinstall || echo "Failed to install drivers automatically; check manually."
 
-# Install CUDA Toolkit (if necessary) without prompts
+# Install CUDA Toolkit (if necessary)
 echo "Installing CUDA Toolkit..."
 # Specify the version you need
 CUDA_VERSION="cuda-11-4"
@@ -54,15 +56,15 @@ nvcc --version
 echo "Installing dependencies..."
 pip install google-cloud-secret-manager cryptography
 
-# Install requirements from requirements.txt without prompts
+# Install requirements from requirements.txt
 echo "Installing requirements from requirements.txt..."
 pip install -r requirements.txt
 
-# Retrieve and decrypt the Hugging Face Access Token without prompts
+# Retrieve and decrypt the Hugging Face Access Token
 echo "Retrieving and decrypting the Hugging Face Access Token..."
 export HF_TOKEN=$(python3 -c 'from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY"), "ENCRYPTED_TOKEN"))')
 
-# Login to the HuggingFace CLI without prompts
+# Login to the HuggingFace CLI
 echo "Logging in to the HuggingFace CLI..."
 echo $HF_TOKEN | huggingface-cli login
 
