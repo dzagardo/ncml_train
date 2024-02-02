@@ -30,7 +30,7 @@ pip install huggingface-hub
 
 # Ensure system is up to date
 echo "Updating system packages..."
-sudo apt-get update && sudo apt-get upgrade -y
+sudo apt-get update && sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade -y
 
 # Install NVIDIA GPU driver
 echo "Installing NVIDIA GPU driver..."
