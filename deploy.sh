@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Redirect stdout and stderr to a log file
 LOG_FILE="/var/log/deploy-script.log"
 exec > $LOG_FILE 2>&1
@@ -7,6 +5,12 @@ exec > $LOG_FILE 2>&1
 # Set environment variables for non-interactive mode
 export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
+
+# Pre-seed answers to known prompts
+# For example, if tzdata is being installed and prompts for geographic area:
+export TZ="Etc/UTC"
+ln -fs /usr/share/zoneinfo/$TZ /etc/localtime
+dpkg-reconfigure --frontend noninteractive tzdata
 
 echo "Starting the deploy script..."
 
