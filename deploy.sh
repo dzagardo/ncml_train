@@ -22,6 +22,6 @@ echo $HF_TOKEN | huggingface-cli login
 python train.py
 
 # Shut down the instance after the script completes
-sudo shutdown -h now
+# sudo shutdown -h now
 
 echo "Deploy script finished."
