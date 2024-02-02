@@ -24,6 +24,30 @@ source /opt/conda/bin/activate myenv
 echo "Installing Hugging Face CLI..."
 pip install huggingface-hub
 
+# Ensure system is up to date
+echo "Updating system packages..."
+sudo apt-get update && sudo apt-get upgrade -y
+
+# Install NVIDIA GPU driver
+echo "Installing NVIDIA GPU driver..."
+sudo apt-get install -y software-properties-common
+sudo add-apt-repository contrib
+sudo add-apt-repository non-free
+sudo apt-get update
+
+# Automatically install the recommended driver
+sudo ubuntu-drivers autoinstall || echo "Failed to install drivers automatically; check manually."
+
+# Install CUDA Toolkit (if necessary)
+echo "Installing CUDA Toolkit..."
+# Specify the version you need
+CUDA_VERSION="cuda-11-4"
+sudo apt-get install -y $CUDA_VERSION
+
+# Verify CUDA installation
+echo "Verifying CUDA installation..."
+nvcc --version
+
 # Install necessary dependencies for secret retrieval and decryption
 echo "Installing dependencies..."
 pip install google-cloud-secret-manager cryptography
@@ -33,7 +57,6 @@ echo "Installing requirements from requirements.txt..."
 pip install -r requirements.txt
 
 # Retrieve and decrypt the Hugging Face Access Token
-# Using python3 explicitly as we are in the conda environment
 echo "Retrieving and decrypting the Hugging Face Access Token..."
 export HF_TOKEN=$(python3 -c 'from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY"), "ENCRYPTED_TOKEN"))')
 
