@@ -19,14 +19,22 @@ export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
 
 echo "Installing Miniconda..."
-# Download Miniconda installer script to the user's home directory
+# Ensure the Miniconda installer script is executed in a directory with write permissions
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/miniconda.sh
+
+# Change permissions to make sure the script is executable
+chmod +x $HOME/miniconda.sh
 
 # Execute the installer script with the -b option for silent installation, and -p to specify the installation path
 bash $HOME/miniconda.sh -b -p $HOME/miniconda
 
+# Remove the installer script to clean up the home directory
+rm $HOME/miniconda.sh
+
 # Update the PATH environment variable to include Miniconda's bin directory
 echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> $HOME/.bashrc
+
+# Applying the new PATH without needing to logout and login again
 source $HOME/.bashrc
 
 echo "Creating a new Conda environment with Python 3.9..."
@@ -35,7 +43,7 @@ conda create -n myenv python=3.9 -y
 
 echo "Activating the Conda environment..."
 # Activating the newly created Conda environment
-source $HOME/miniconda/bin/activate myenv
+conda activate myenv
 
 echo "Installing Hugging Face CLI..."
 pip install huggingface-hub
@@ -43,13 +51,7 @@ pip install huggingface-hub
 echo "Ensuring dpkg is configured properly..."
 sudo dpkg --configure -a
 
-echo "Adding NVIDIA repository..."
-sudo wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb
-sudo dpkg -i cuda-keyring_1.0-1_all.deb
-
 sudo apt-get update
-
-echo "Assuming NVIDIA drivers are handled by the startup script. Skipping driver installation here."
 
 echo "Installing dependencies..."
 pip install google-cloud-secret-manager cryptography
