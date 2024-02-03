@@ -57,6 +57,11 @@ pip install google-cloud-secret-manager cryptography
 echo "Installing requirements from requirements.txt..."
 pip install -r requirements.txt
 
+# Install necessary dependencies for secret retrieval and decryption
+sudo pip3 install google-cloud-secret-manager cryptography
+
+echo "Installing dependencies for secret retrieval and decryption..."
+
 echo "Retrieving and decrypting the Hugging Face Access Token..."
 export HF_TOKEN=$(python3 -c 'from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY"), "ENCRYPTED_TOKEN"))')
 
