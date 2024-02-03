@@ -43,16 +43,6 @@ sudo apt-get update
 
 echo "Assuming NVIDIA drivers are handled by the startup script. Skipping driver installation here."
 
-echo "Installing CUDA Toolkit..."
-CUDA_VERSION="cuda-toolkit-11-4" # Adjust the package name as necessary
-sudo apt-get install -y $CUDA_VERSION
-
-echo "Installing cuDNN..."
-sudo apt-get install -y libcudnn8
-
-echo "Verifying CUDA installation..."
-nvcc --version
-
 echo "Installing dependencies..."
 pip install google-cloud-secret-manager cryptography
 
