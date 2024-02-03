@@ -19,15 +19,23 @@ export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
 
 echo "Installing Miniconda..."
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
-bash /tmp/miniconda.sh -b -p /opt/conda
-export PATH="/opt/conda/bin:$PATH"
+# Download Miniconda installer script to the user's home directory
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/miniconda.sh
+
+# Execute the installer script with the -b option for silent installation, and -p to specify the installation path
+bash $HOME/miniconda.sh -b -p $HOME/miniconda
+
+# Update the PATH environment variable to include Miniconda's bin directory
+echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> $HOME/.bashrc
+source $HOME/.bashrc
 
 echo "Creating a new Conda environment with Python 3.9..."
-sudo conda create -n myenv2 python=3.9 -y
+# This command now should not face the NotWritableError since Miniconda is installed in the user's home directory
+conda create -n myenv python=3.9 -y
 
 echo "Activating the Conda environment..."
-source /opt/conda/bin/activate myenv
+# Activating the newly created Conda environment
+source $HOME/miniconda/bin/activate myenv
 
 echo "Installing Hugging Face CLI..."
 pip install huggingface-hub
