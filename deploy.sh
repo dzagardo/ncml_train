@@ -43,6 +43,7 @@ conda create -n myenv python=3.9 -y
 
 echo "Activating the Conda environment..."
 # Activating the newly created Conda environment
+conda init bash
 conda activate myenv
 
 echo "Installing Hugging Face CLI..."
