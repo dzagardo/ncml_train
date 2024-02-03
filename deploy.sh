@@ -43,7 +43,7 @@ conda create -n myenv python=3.9 -y
 
 echo "Activating the Conda environment..."
 # Activating the newly created Conda environment
-conda init bash
+conda init
 conda activate myenv
 
 echo "Installing Hugging Face CLI..."
@@ -69,7 +69,8 @@ echo "Retrieving and decrypting the Hugging Face Access Token..."
 export HF_TOKEN=$(python3 -c 'from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY"), "ENCRYPTED_TOKEN"))')
 
 echo "Logging in to the HuggingFace CLI..."
-echo $HF_TOKEN | huggingface-cli login
+export HUGGINGFACE_HUB_TOKEN=$HF_TOKEN
+huggingface-cli login
 
 echo "Running the training script..."
 python3 train.py
