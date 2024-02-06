@@ -57,27 +57,6 @@ pip install peft
 # Install necessary dependencies for secret retrieval and decryption
 sudo pip3 install google-cloud-secret-manager cryptography
 
-echo "Installing dependencies for secret retrieval and decryption..."
-
-# Fetch the encrypted token from Google Compute Engine instance metadata
-ENCRYPTED_TOKEN=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/encryptedHFAccessToken" -H "Metadata-Flavor: Google")
-
-echo "Retrieving and decrypting the Hugging Face Access Token..."
-# Make sure to correctly expand the variable
-export HF_TOKEN=$(python3 -c "from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version('privacytoolbox', 'ENCRYPTION_SECRET_KEY'), '$ENCRYPTED_TOKEN'))")
-
-echo "HF Token is..."
-echo $HF_TOKEN
-
-echo "Setting Hugging Face CLI authentication token..."
-# Set the HF access token for Hugging Face CLI authentication
-export HUGGINGFACE_HUB_TOKEN=$HF_TOKEN
-
-# Verification: The `whoami` command can be used to verify that your authentication is recognized.
-# This command should return your Hugging Face username if the token is correctly set and valid.
-huggingface-cli whoami
-
-
 echo "Running the training script..."
 python3 train.py
 
