@@ -51,6 +51,7 @@ pip install google-cloud-secret-manager cryptography
 
 echo "Installing requirements from requirements.txt..."
 pip install -r requirements.txt
+pip install peft==0.4.0
 
 # Install necessary dependencies for secret retrieval and decryption
 sudo pip3 install google-cloud-secret-manager cryptography
