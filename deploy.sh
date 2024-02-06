@@ -67,7 +67,7 @@ echo "Retrieving and decrypting the Hugging Face Access Token..."
 export HF_TOKEN=$(python3 -c "from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version('privacytoolbox', 'ENCRYPTION_SECRET_KEY'), \"$ENCRYPTED_TOKEN\"))")
 
 echo "HF Token is..."
-echo HF_TOKEN
+echo $HF_TOKEN
 
 echo "Logging in to the HuggingFace CLI using the decrypted token..."
 # Use the HF_TOKEN for Hugging Face CLI authentication
