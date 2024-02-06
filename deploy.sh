@@ -52,14 +52,18 @@ pip install google-cloud-secret-manager cryptography
 echo "Installing requirements from requirements.txt..."
 pip install -r requirements.txt
 pip install peft==0.4.0
+pip install peft
 
 # Install necessary dependencies for secret retrieval and decryption
 sudo pip3 install google-cloud-secret-manager cryptography
 
 echo "Installing dependencies for secret retrieval and decryption..."
 
+# Replace this with the appropriate command to fetch the encrypted token from your metadata or secret manager
+ENCRYPTED_TOKEN=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/encryptedHFAccessToken" -H "Metadata-Flavor: Google")
+
 echo "Retrieving and decrypting the Hugging Face Access Token..."
-export HF_TOKEN=$(python3 -c 'from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY"), "ENCRYPTED_TOKEN"))')
+export HF_TOKEN=$(python3 -c "from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version('privacytoolbox', 'ENCRYPTION_SECRET_KEY'), '$ENCRYPTED_TOKEN'))")
 
 echo "Logging in to the HuggingFace CLI..."
 export HUGGINGFACE_HUB_TOKEN=$HF_TOKEN
