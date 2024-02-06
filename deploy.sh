@@ -59,15 +59,24 @@ sudo pip3 install google-cloud-secret-manager cryptography
 
 echo "Installing dependencies for secret retrieval and decryption..."
 
-# Replace this with the appropriate command to fetch the encrypted token from your metadata or secret manager
+# Fetch the encrypted token from Google Compute Engine instance metadata
 ENCRYPTED_TOKEN=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/encryptedHFAccessToken" -H "Metadata-Flavor: Google")
 
 echo "Retrieving and decrypting the Hugging Face Access Token..."
-export HF_TOKEN=$(python3 -c "from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version('privacytoolbox', 'ENCRYPTION_SECRET_KEY'), '$ENCRYPTED_TOKEN'))")
+# Make sure to remove the single quotes around $ENCRYPTED_TOKEN to correctly expand the variable
+export HF_TOKEN=$(python3 -c "from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version('privacytoolbox', 'ENCRYPTION_SECRET_KEY'), \"$ENCRYPTED_TOKEN\"))")
 
-echo "Logging in to the HuggingFace CLI..."
+echo "HF Token is..."
+echo HF_TOKEN
+
+echo "Logging in to the HuggingFace CLI using the decrypted token..."
+# Use the HF_TOKEN for Hugging Face CLI authentication
 export HUGGINGFACE_HUB_TOKEN=$HF_TOKEN
+
+# Now attempt to log in; since HUGGINGFACE_HUB_TOKEN is set, this should not prompt for input
 huggingface-cli login
+
+# Verify the login was successful
 huggingface-cli whoami
 
 echo "Running the training script..."

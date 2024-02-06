@@ -7,41 +7,25 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     BitsAndBytesConfig,
-    HfArgumentParser,
     TrainingArguments,
     pipeline,
     logging,
-    Trainer,
     AdamW,
 )
 from datasets import load_dataset, DatasetDict, load_from_disk
-from transformers import DataCollatorWithPadding
 from torch.utils.data import Dataset
-import os
-import json
-import chardet
-import pyarrow as pa
-import pyarrow.dataset as ds
-import pandas as pd
 from peft import LoraConfig, PeftModel
 from trl import SFTTrainer
-import math
 from torch.utils.data import DataLoader
-from torch.cuda.amp import GradScaler
-from opacus import PrivacyEngine
-from opacus.grad_sample import GradSampleModule
-from transformers import PreTrainedModel
 from typing import Dict
 from torch.optim import SGD
 from torch.nn.utils import clip_grad_norm_
-from tensorflow_privacy.privacy.analysis import gdp_accountant
 from scipy import optimize
 from scipy import stats
 import numpy as np
 
 print(torch.__version__)
 print("GPU available:", torch.cuda.is_available())
-# DP Helper Functions
 
 ################################################################################
 # DP Helper Functions
@@ -307,6 +291,12 @@ class PrivacyAwareTrainer(SFTTrainer):
 
         return loss.item()
 
+class ExtendedTrainingArguments(TrainingArguments):
+    def __init__(self, total_dataset_size: int = 0, training_sample_size: int = 0, **kwargs):
+        super().__init__(**kwargs)
+        self.total_dataset_size = total_dataset_size
+        self.training_sample_size = training_sample_size
+
 ################################################################################
 # Model and Dataset parameters
 ################################################################################
@@ -476,8 +466,16 @@ optimizer = SGD(
     weight_decay=weight_decay
 )
 
+# Total number of iterations (each with 100 samples)
+total_iterations = 10
+iteration_size = 100
+
+# Total size of the dataset
+total_dataset_size = total_iterations * iteration_size
+training_sample_size = iteration_size
+
 # Set training parameters
-training_arguments = TrainingArguments(
+training_arguments = ExtendedTrainingArguments(
     output_dir='/content/drive/My Drive/Software/LLM/Models',
     num_train_epochs=num_train_epochs,
     per_device_train_batch_size=per_device_train_batch_size,
@@ -493,16 +491,14 @@ training_arguments = TrainingArguments(
     warmup_ratio=warmup_ratio,
     group_by_length=group_by_length,
     lr_scheduler_type=lr_scheduler_type,
-    report_to="tensorboard"
+    report_to="tensorboard",
+    total_dataset_size=total_dataset_size,
+    training_sample_size=training_sample_size,
 )
 
 ################################################################################
 # Training Loop
 ################################################################################
-
-# Total number of iterations (each with 100 samples)
-total_iterations = 10
-iteration_size = 100
 
 # Initialize the global privacy budget
 current_global_privacy_budget = float('inf')
@@ -514,21 +510,11 @@ for i in range(total_iterations):
     start_idx = i * iteration_size
     end_idx = start_idx + iteration_size
 
-    # Total size of the dataset
-    total_dataset_size = total_iterations * iteration_size
-
     # Select the next 100 rows from the dataset
     small_dataset = dataset.select(range(start_idx, end_idx))
 
-    # Size of the training sample (batch size)
-    training_sample_size = len(small_dataset)
-
     # Initialize the StreamDataset with the selected subset
     stream_dataset = StreamDataset(tokenized_dataset=small_dataset, tokenizer=tokenizer)
-
-    # Update TrainingArguments to include the total dataset size and training sample size
-    training_arguments.total_dataset_size = total_dataset_size
-    training_arguments.training_sample_size = training_sample_size
 
     # Initialize the Trainer with the optimizer
     trainer = PrivacyAwareTrainer(
