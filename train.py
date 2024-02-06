@@ -470,7 +470,7 @@ optimizer = SGD(
 )
 
 # Total number of iterations (each with 100 samples)
-total_iterations = 10
+total_iterations = 1
 iteration_size = 100
 
 # Total size of the dataset
@@ -592,5 +592,5 @@ tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
 # Now, push the model and tokenizer to the hub
-model.push_to_hub("tiny-llama-orca-amp-gclip-dp-pa-sgd-dz-v1.2.1000")
-tokenizer.push_to_hub("tiny-llama-orca-amp-gclip-dp-pa-sgd-dz-v1.2.1000")
+model.push_to_hub("gcp_test")
+tokenizer.push_to_hub("gcp_test")
