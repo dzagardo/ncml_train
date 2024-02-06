@@ -297,6 +297,9 @@ class ExtendedTrainingArguments(TrainingArguments):
         self.total_dataset_size = total_dataset_size
         self.training_sample_size = training_sample_size
 
+def tokenize_function(examples):
+    return tokenizer(examples["text"], padding="max_length", truncation=True)
+
 ################################################################################
 # Model and Dataset parameters
 ################################################################################
@@ -513,8 +516,10 @@ for i in range(total_iterations):
     # Select the next 100 rows from the dataset
     small_dataset = dataset.select(range(start_idx, end_idx))
 
+    tokenized_dataset = dataset.map(tokenize_function, batched=True)
+
     # Initialize the StreamDataset with the selected subset
-    stream_dataset = StreamDataset(tokenized_dataset=small_dataset, tokenizer=tokenizer)
+    stream_dataset = StreamDataset(tokenized_dataset=tokenized_dataset, tokenizer=tokenizer)
 
     # Initialize the Trainer with the optimizer
     trainer = PrivacyAwareTrainer(
