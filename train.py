@@ -471,7 +471,7 @@ optimizer = SGD(
 
 # Total number of iterations (each with 100 samples)
 total_iterations = 1
-iteration_size = 100
+iteration_size = 10
 
 # Total size of the dataset
 total_dataset_size = total_iterations * iteration_size
