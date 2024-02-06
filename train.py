@@ -298,7 +298,7 @@ class ExtendedTrainingArguments(TrainingArguments):
         self.training_sample_size = training_sample_size
 
 def tokenize_function(examples):
-    return tokenizer(examples["text"], padding="max_length", truncation=True)
+    return tokenizer(examples["text"], padding=True, truncation=True, max_length=max_seq_length)
 
 ################################################################################
 # Model and Dataset parameters
@@ -516,16 +516,16 @@ for i in range(total_iterations):
     # Select the next 100 rows from the dataset
     small_dataset = dataset.select(range(start_idx, end_idx))
 
-    tokenized_dataset = dataset.map(tokenize_function, batched=True)
+    # tokenized_dataset = dataset.map(tokenize_function, batched=True)
 
     # Initialize the StreamDataset with the selected subset
-    stream_dataset = StreamDataset(tokenized_dataset=tokenized_dataset, tokenizer=tokenizer)
+    # stream_dataset = StreamDataset(tokenized_dataset=tokenized_dataset, tokenizer=tokenizer)
 
     # Initialize the Trainer with the optimizer
     trainer = PrivacyAwareTrainer(
         model=model,
         args=training_arguments,
-        train_dataset=stream_dataset,
+        train_dataset=small_dataset,
         peft_config=peft_config,
         dataset_text_field="text",
         max_seq_length=max_seq_length,
