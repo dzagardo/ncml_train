@@ -13,14 +13,3 @@ echo "======================================"
 echo "======================================"
 echo "Deep Learning VM setup completed"
 echo "======================================"
-
-echo "Cloning the project repository..."
-git clone https://github.com/dzagardo/ncml_train.git
-cd ncml_train
-
-# Ensure deploy.sh is executable
-echo "Making deploy.sh script executable..."
-chmod +x deploy.sh
-
-echo "Running the project's startup script..."
-./deploy.sh || { echo "Execution of deploy.sh failed"; exit 1; }

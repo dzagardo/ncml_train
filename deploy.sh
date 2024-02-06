@@ -68,6 +68,7 @@ export HF_TOKEN=$(python3 -c "from utils import access_secret_version, decrypt_t
 echo "Logging in to the HuggingFace CLI..."
 export HUGGINGFACE_HUB_TOKEN=$HF_TOKEN
 huggingface-cli login
+huggingface-cli whoami
 
 echo "Running the training script..."
 python3 train.py
