@@ -357,16 +357,16 @@ fp16 = False
 bf16 = False
 
 # Batch size per GPU for training
-per_device_train_batch_size = 4
+per_device_train_batch_size = 2
 
 # Batch size per GPU for evaluation
-per_device_eval_batch_size = 4
+per_device_eval_batch_size = 2
 
 # Micro batch size
 micro_batch_size = 1
 
 # Number of update steps to accumulate the gradients for
-gradient_accumulation_steps = 4
+gradient_accumulation_steps = 2
 
 # Enable gradient checkpointing
 gradient_checkpointing = True
@@ -519,7 +519,7 @@ for i in range(total_iterations):
     # tokenized_dataset = dataset.map(tokenize_function, batched=True)
 
     # Initialize the StreamDataset with the selected subset
-    # stream_dataset = StreamDataset(tokenized_dataset=tokenized_dataset, tokenizer=tokenizer)
+    stream_dataset = StreamDataset(tokenized_dataset=small_dataset, tokenizer=tokenizer)
 
     # Initialize the Trainer with the optimizer
     trainer = PrivacyAwareTrainer(
