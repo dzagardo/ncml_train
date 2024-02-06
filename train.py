@@ -587,6 +587,21 @@ base_model = AutoModelForCausalLM.from_pretrained(
 model = PeftModel.from_pretrained(base_model, new_model)
 model = model.merge_and_unload()
 
+################################################################################
+# LOGIN To Hugging Face
+################################################################################
+
+from utils import set_hf_authentication
+# Set your Google Cloud project ID and the secret ID for your encryption key
+project_id = "privacytoolbox"
+secret_id = "ENCRYPTION_SECRET_KEY"
+# Authenticate with Hugging Face
+set_hf_authentication(project_id, secret_id)
+
+################################################################################
+# Reload and Push to Hugging Face
+################################################################################
+
 # Reload tokenizer to save it
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
