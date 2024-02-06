@@ -63,21 +63,20 @@ echo "Installing dependencies for secret retrieval and decryption..."
 ENCRYPTED_TOKEN=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/encryptedHFAccessToken" -H "Metadata-Flavor: Google")
 
 echo "Retrieving and decrypting the Hugging Face Access Token..."
-# Make sure to remove the single quotes around $ENCRYPTED_TOKEN to correctly expand the variable
-export HF_TOKEN=$(python3 -c "from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version('privacytoolbox', 'ENCRYPTION_SECRET_KEY'), \"$ENCRYPTED_TOKEN\"))")
+# Make sure to correctly expand the variable
+export HF_TOKEN=$(python3 -c "from utils import access_secret_version, decrypt_token; print(decrypt_token(access_secret_version('privacytoolbox', 'ENCRYPTION_SECRET_KEY'), '$ENCRYPTED_TOKEN'))")
 
 echo "HF Token is..."
 echo $HF_TOKEN
 
-echo "Logging in to the HuggingFace CLI using the decrypted token..."
-# Use the HF_TOKEN for Hugging Face CLI authentication
+echo "Setting Hugging Face CLI authentication token..."
+# Set the HF access token for Hugging Face CLI authentication
 export HUGGINGFACE_HUB_TOKEN=$HF_TOKEN
 
-# Now attempt to log in; since HUGGINGFACE_HUB_TOKEN is set, this should not prompt for input
-huggingface-cli login
-
-# Verify the login was successful
+# Verification: The `whoami` command can be used to verify that your authentication is recognized.
+# This command should return your Hugging Face username if the token is correctly set and valid.
 huggingface-cli whoami
+
 
 echo "Running the training script..."
 python3 train.py
