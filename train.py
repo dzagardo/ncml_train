@@ -589,8 +589,13 @@ model = model.merge_and_unload()
 
 # Adjust the model's configuration here
 model.config.do_sample = True  # Enable sampling
-model.config.temperature = None  # Remove temperature adjustment if not sampling
-model.config.top_p = None  # Remove nucleus (top-p) sampling threshold if not sampling
+model.config.temperature = 1.0  # Default value, has no effect if do_sample=False
+model.config.top_p = 1.0  # Default value, has no effect if do_sample=False
+
+try:
+    model.config.validate()
+except ValueError as e:
+    print(f"Validation error: {e}")
 
 ################################################################################
 # LOGIN To Hugging Face
