@@ -587,6 +587,11 @@ base_model = AutoModelForCausalLM.from_pretrained(
 model = PeftModel.from_pretrained(base_model, new_model)
 model = model.merge_and_unload()
 
+# Adjust the model's configuration here
+model.config.do_sample = True  # Enable sampling
+model.config.temperature = None  # Remove temperature adjustment if not sampling
+model.config.top_p = None  # Remove nucleus (top-p) sampling threshold if not sampling
+
 ################################################################################
 # LOGIN To Hugging Face
 ################################################################################
