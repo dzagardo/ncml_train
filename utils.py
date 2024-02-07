@@ -3,7 +3,6 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 import base64
 import binascii
-from transformers import HfApi
 import requests
 
 def fetch_encrypted_token():
@@ -37,9 +36,9 @@ def decrypt_token(encryption_secret_key, token):
     decryptor = cipher.decryptor()
     return (decryptor.update(encrypted_text) + decryptor.finalize()).decode('utf-8')
 
-def set_hf_authentication(project_id, secret_id):
-    """Fetch, decrypt, and use the Hugging Face Access Token for authentication."""
-    encrypted_token = fetch_encrypted_token()
-    encryption_secret_key = access_secret_version(project_id, secret_id)
-    decrypted_token = decrypt_token(encryption_secret_key, encrypted_token)
-    HfApi().set_access_token(decrypted_token)
+# utils.py adjustment for Hugging Face authentication
+from huggingface_hub import HfFolder
+
+def set_hf_authentication(token):
+    """Directly authenticate with the Hugging Face Hub using the given token."""
+    HfFolder.save_token(token)

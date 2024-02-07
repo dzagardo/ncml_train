@@ -591,21 +591,25 @@ model = model.merge_and_unload()
 # LOGIN To Hugging Face
 ################################################################################
 
-from utils import set_hf_authentication
-# Set your Google Cloud project ID and the secret ID for your encryption key
-project_id = "privacytoolbox"
-secret_id = "ENCRYPTION_SECRET_KEY"
-# Authenticate with Hugging Face
-set_hf_authentication(project_id, secret_id)
+from utils import fetch_encrypted_token, decrypt_token, set_hf_authentication, access_secret_version
+
+# Fetch and decrypt the Hugging Face Access Token
+encrypted_token = fetch_encrypted_token()
+encryption_secret_key = access_secret_version("privacytoolbox", "ENCRYPTION_SECRET_KEY")
+decrypted_token = decrypt_token(encryption_secret_key, encrypted_token)
+
+# Authenticate with Hugging Face using the decrypted token
+set_hf_authentication(decrypted_token)
 
 ################################################################################
 # Reload and Push to Hugging Face
 ################################################################################
 
-# Reload tokenizer to save it
+# Assuming `model_name` is defined earlier in your script
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
-# Now, push the model and tokenizer to the hub
+
+# Push the model and tokenizer to the hub
 model.push_to_hub("gcp_test")
 tokenizer.push_to_hub("gcp_test")
