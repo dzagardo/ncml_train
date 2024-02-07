@@ -611,5 +611,5 @@ tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
 
 # Push the model and tokenizer to the hub
-model.push_to_hub("gcp_test")
-tokenizer.push_to_hub("gcp_test")
+model.push_to_hub("gcp_test_v2")
+tokenizer.push_to_hub("gcp_test_v2")
